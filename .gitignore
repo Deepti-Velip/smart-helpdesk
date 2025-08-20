@@ -1,0 +1,69 @@
+# === Node / Express / React ===
+node_modules/
+dist/
+build/
+.cache/
+.npm/
+*.log
+*.tmp
+
+# React specific
+*.env.development.local
+*.env.test.local
+*.env.production.local
+
+# === Python / FastAPI ===
+__pycache__/
+*.py[cod]
+*.so
+*.egg
+*.egg-info/
+.eggs/
+.venv/
+venv/
+ENV/
+env/
+Pipfile.lock
+poetry.lock
+
+# Byte-compiled / optimized
+*.pyo
+*.pyd
+
+# === Redis / Celery / RQ ===
+celerybeat-schedule
+celerybeat.pid
+*.rdb
+dump.rdb
+
+# === Environment Variables ===
+.env
+.env.local
+.env.*.local
+
+# === Logs ===
+*.log
+logs/
+*.out
+*.err
+
+# === Coverage / Testing ===
+coverage/
+jest-cache/
+.nyc_output/
+pytest_cache/
+htmlcov/
+
+# === OS / IDE Files ===
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Icon?
+desktop.ini
+.vscode/
+.idea/
+*.iml
+
+# === Misc ===
+*.swp
+*.swo
