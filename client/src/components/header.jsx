@@ -1,24 +1,51 @@
-import { useState } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { useState, useMemo } from "react";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { IconMenu2 } from "@tabler/icons-react";
+import { jwtDecode } from "jwt-decode";
 
 export default function Header() {
   const route = useLocation();
-  const isLoggedIn = localStorage.getItem("token");
-
-  const menuLinks = isLoggedIn
-    ? [{ path: "/home", name: "Home" }]
-    : [
-        { path: "/login", name: "Login" },
-        { path: "/register", name: "Sign Up" },
-        { path: "/home", name: "Home" },
-      ];
-
+  const navigate = useNavigate();
   const [isHidden, setHidden] = useState(true);
 
-  const toggleMenu = () => {
-    setHidden(!isHidden);
+  const token = localStorage.getItem("token");
+
+  // Get role from token if logged in
+  const role = useMemo(() => {
+    if (!token) return null;
+    try {
+      const decoded = jwtDecode(token);
+      return decoded.role;
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+  }, [token]);
+
+  // Menu links based on role
+  let menuLinks = [];
+
+  if (!role) {
+    menuLinks.push(
+      { path: "/home", name: "Home" },
+      { path: "/login", name: "Login" },
+      { path: "/register", name: "Sign Up" }
+    );
+  } else if (role === "user") {
+    menuLinks.push({ path: "/user/dashboard", name: "Dashboard" });
+  } else if (role === "agent") {
+    menuLinks.push({ path: "/agent/dashboard", name: "Dashboard" });
+  } else if (role === "admin") {
+    menuLinks.push({ path: "/admin/dashboard", name: "Dashboard" });
+  }
+
+  // Logout button
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/login");
   };
+
+  const toggleMenu = () => setHidden(!isHidden);
 
   return (
     <header className="relative">
@@ -51,6 +78,16 @@ export default function Header() {
                 </NavLink>
               </li>
             ))}
+            {role && (
+              <li>
+                <button
+                  onClick={handleLogout}
+                  className="block w-full text-left px-4 py-2 text-red-400 hover:text-red-500"
+                >
+                  Logout
+                </button>
+              </li>
+            )}
           </ul>
         </div>
       )}
@@ -64,7 +101,7 @@ export default function Header() {
                 to={link.path}
                 className={`transition-colors duration-200 px-3 py-2 rounded ${
                   route.pathname === link.path
-                    ? "bg-gray-600 "
+                    ? "bg-gray-600"
                     : "text-gray-200 hover:text-yellow-400"
                 }`}
               >
@@ -72,6 +109,16 @@ export default function Header() {
               </NavLink>
             </li>
           ))}
+          {role && (
+            <li>
+              <button
+                onClick={handleLogout}
+                className="px-3 py-2 rounded text-red-400 hover:text-red-500"
+              >
+                Logout
+              </button>
+            </li>
+          )}
         </ul>
       </div>
     </header>

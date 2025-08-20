@@ -1,9 +1,18 @@
 import axios from "axios";
 
-const useAxios = axios.create({
-  baseURL: `${import.meta.env.VITE_APP_BASE_URL}`,
-
-  headers: { Authorization: localStorage.getItem("accessToken") },
+const instance = axios.create({
+  baseURL: "http://localhost:5000",
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
 
-export default useAxios;
+instance.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+export default instance;

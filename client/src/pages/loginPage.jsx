@@ -1,11 +1,14 @@
 import { useState } from "react";
-import useAxios from "../axios";
+import { jwtDecode } from "jwt-decode";
+import { useNavigate } from "react-router-dom";
+import axios from "../axios/index";
 
 export default function Login() {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -14,9 +17,17 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await useAxios.post("/api/auth/login", formData);
-      alert("Login successful!");
-      localStorage.setItem("token", res.data.token);
+      const res = await axios.post("/api/auth/login", formData);
+
+      const token = res.data.token; // ✅ axios puts body in res.data
+      localStorage.setItem("token", token);
+
+      const { role } = jwtDecode(token);
+
+      if (role === "user") navigate("/tickets/my");
+      else if (role === "agent") navigate("/tickets/assigned");
+      else if (role === "admin") navigate("/admin/dashboard");
+      else navigate("/home");
     } catch (err) {
       alert(err.response?.data?.message || "Login failed");
     }
