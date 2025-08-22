@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import api from "../axios/index";
+import api from "../../axios/index";
 
 export default function AddArticle() {
   const [form, setForm] = useState({

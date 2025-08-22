@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import axios from "../axios/index";
+import axios from "../../axios/index";
 
 export default function AdminDashboard() {
   const [articles, setArticles] = useState([]);

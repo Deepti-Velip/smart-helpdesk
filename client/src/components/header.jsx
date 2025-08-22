@@ -33,6 +33,7 @@ export default function Header() {
     );
   } else if (role === "user") {
     menuLinks.push({ path: "/user/dashboard", name: "Dashboard" });
+    menuLinks.push({ path: "/user/create-ticket", name: "Log Issue" });
   } else if (role === "agent") {
     menuLinks.push({ path: "/agent/dashboard", name: "Dashboard" });
   } else if (role === "admin") {
