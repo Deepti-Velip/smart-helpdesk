@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import authRoutes from "./routes/auth.js";
 import articleRoutes from "./routes/kb.js";
+import ticketRoutes from "./routes/ticket.js";
 import connectDB from "./config/db.js";
 
 dotenv.config();
@@ -20,6 +21,7 @@ app.use(express.json());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/kb", articleRoutes);
+app.use("/api/tickets", ticketRoutes);
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
