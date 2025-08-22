@@ -17,10 +17,11 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("/api/auth/login", formData);
+      const res = await axios.post("/auth/login", formData);
 
-      const token = res.data.token; // ✅ axios puts body in res.data
+      const token = res.data.token;
       localStorage.setItem("token", token);
+      localStorage.getItem("token");
 
       const { role } = jwtDecode(token);
 

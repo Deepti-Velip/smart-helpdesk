@@ -37,6 +37,7 @@ export default function Header() {
     menuLinks.push({ path: "/agent/dashboard", name: "Dashboard" });
   } else if (role === "admin") {
     menuLinks.push({ path: "/admin/dashboard", name: "Dashboard" });
+    menuLinks.push({ path: "/admin/add-article", name: "Add Article" });
   }
 
   // Logout button
@@ -111,12 +112,17 @@ export default function Header() {
           ))}
           {role && (
             <li>
-              <button
+              <NavLink
+                to="#"
                 onClick={handleLogout}
-                className="px-3 py-2 rounded text-red-400 hover:text-red-500"
+                className={`px-3 py-2 rounded ${
+                  route.pathname === "/logout"
+                    ? "bg-gray-600"
+                    : "text-red-200 hover:text-red-400"
+                }`}
               >
                 Logout
-              </button>
+              </NavLink>
             </li>
           )}
         </ul>

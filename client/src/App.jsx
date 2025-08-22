@@ -9,6 +9,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import UserDashboard from "./pages/UserDashboard";
 import AgentDashboard from "./pages/AgentDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
+import AddArticle from "./pages/AddArticle";
 
 function App() {
   return (
@@ -33,6 +34,14 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={["agent"]}>
               <AgentDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/add-article"
+          element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <AddArticle />
             </ProtectedRoute>
           }
         />
