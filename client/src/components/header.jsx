@@ -36,9 +36,13 @@ export default function Header() {
     menuLinks.push({ path: "/user/create-ticket", name: "Log Issue" });
   } else if (role === "agent") {
     menuLinks.push({ path: "/agent/dashboard", name: "Dashboard" });
+    menuLinks.push({ path: "/admin/tickets", name: "Manage Tickets" });
   } else if (role === "admin") {
     menuLinks.push({ path: "/admin/dashboard", name: "Dashboard" });
     menuLinks.push({ path: "/admin/add-article", name: "Add Article" });
+    menuLinks.push({ path: "/admin/articles", name: "Articles" });
+    menuLinks.push({ path: "/admin/tickets", name: "Manage Tickets" });
+    menuLinks.push({ path: "/admin/settings", name: "Settings" });
   }
 
   // Logout button

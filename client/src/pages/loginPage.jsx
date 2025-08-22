@@ -25,8 +25,8 @@ export default function Login() {
 
       const { role } = jwtDecode(token);
 
-      if (role === "user") navigate("/tickets/my");
-      else if (role === "agent") navigate("/tickets/assigned");
+      if (role === "user") navigate("/user/dashboard");
+      else if (role === "agent") navigate("/agent/dashboard");
       else if (role === "admin") navigate("/admin/dashboard");
       else navigate("/home");
     } catch (err) {

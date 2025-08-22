@@ -11,6 +11,12 @@ import AdminDashboard from "./pages/Admin/AdminDashboard";
 import AddArticle from "./pages/Admin/AddArticle";
 import CreateTicket from "./pages/User/CreateTicket";
 import NotFound from "./pages/notFound";
+import Settings from "./pages/Admin/Settings";
+import Ticket from "./pages/Ticket";
+import Audit from "./pages/Audit";
+import TicketDetails from "./pages/ticketDetails";
+import ArticleList from "./pages/Admin/ArticlesList";
+import Suggestion from "./pages/User/Suggestions";
 
 function App() {
   return (
@@ -41,6 +47,15 @@ function App() {
           }
         />{" "}
         <Route
+          path="user/suggestion/:id"
+          element={
+            <ProtectedRoute allowedRoles={["user"]}>
+              {" "}
+              <Suggestion />{" "}
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/agent/dashboard"
           element={
             <ProtectedRoute allowedRoles={["agent"]}>
@@ -67,6 +82,51 @@ function App() {
             </ProtectedRoute>
           }
         />{" "}
+        <Route
+          path="/admin/articles"
+          element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+              {" "}
+              <ArticleList />{" "}
+            </ProtectedRoute>
+          }
+        />{" "}
+        <Route
+          path="/admin/settings"
+          element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+              {" "}
+              <Settings />{" "}
+            </ProtectedRoute>
+          }
+        />{" "}
+        <Route
+          path="/admin/tickets"
+          element={
+            <ProtectedRoute allowedRoles={["admin", "agent"]}>
+              {" "}
+              <Ticket />{" "}
+            </ProtectedRoute>
+          }
+        />{" "}
+        <Route
+          path="/audit/:id"
+          element={
+            <ProtectedRoute allowedRoles={["admin", "agent"]}>
+              {" "}
+              <Audit />{" "}
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/ticket-details/:id"
+          element={
+            <ProtectedRoute allowedRoles={["admin", "agent"]}>
+              {" "}
+              <TicketDetails />{" "}
+            </ProtectedRoute>
+          }
+        />
         <Route path="/home" element={<Home />} />{" "}
         <Route path="*" element={<NotFound />} />{" "}
       </Routes>{" "}
