@@ -6,6 +6,7 @@ import {
   getTicketById,
   replyToTicket,
   assignTicket,
+  updateTicketStatus,
 } from "../controllers/ticket.js";
 
 const router = express.Router();
@@ -25,4 +26,6 @@ router.post("/:id/reply", authMiddleware, replyToTicket);
 //agent/admin
 router.post("/:id/assign", authMiddleware, assignTicket);
 
+// PATCH /api/tickets/:id/status
+router.patch("/:id/status", authMiddleware, updateTicketStatus);
 export default router;

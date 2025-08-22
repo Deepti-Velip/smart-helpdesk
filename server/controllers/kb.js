@@ -24,6 +24,18 @@ export const getArticles = async (req, res) => {
   }
 };
 
+// router.post("/by-ids",
+
+export const getArticlesByIds = async (req, res) => {
+  try {
+    const { ids } = req.body;
+    const articles = await Article.find({ _id: { $in: ids } });
+    res.json(articles);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch articles", error: err });
+  }
+};
+
 // Create a new article
 export const createArticle = async (req, res) => {
   try {
