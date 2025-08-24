@@ -1,0 +1,57 @@
+version: "3.9"
+services:
+  client:
+    build: ./client
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=http://localhost:5173/api
+    depends_on:
+      - api
+
+  api:
+    build: ./server
+    ports:
+      - "5000:5000"
+    environment:
+      - MONGO_URI=mongodb+srv://deepti7:password7@helpdesk.mevntel.mongodb.net/?retryWrites=true&w=majority&appName=helpdesk
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - mongo
+      - redis
+
+  agent:
+    build: ./agent
+    ports:
+      - "8000:8000"
+    environment:
+      - NODE_API_URL=http://api:5000/api
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - api
+      - redis
+
+  mongo:
+    image: mongo:6
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    command: mongod --auth --bind_ip_all
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: deepti7
+      MONGO_INITDB_ROOT_PASSWORD: password7
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+
+  mongo-seed:
+    build: ./seed
+    depends_on:
+      - mongo
+    command: ["node", "seed.js"]
+
+volumes:
+  mongo-data:
