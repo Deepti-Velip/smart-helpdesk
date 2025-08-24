@@ -1,7 +1,9 @@
-import { useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { IconMenu2 } from "@tabler/icons-react";
 import { jwtDecode } from "jwt-decode";
+import socket, { joinUserRoom } from "../utils/socket";
+import { toast } from "react-toastify";
 
 export default function Header() {
   const route = useLocation();
@@ -22,6 +24,35 @@ export default function Header() {
     }
   }, [token]);
 
+  const userId = useMemo(() => {
+    if (!token) return null;
+    try {
+      const decoded = jwtDecode(token);
+      return decoded.id || decoded._id;
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+  }, [token]);
+
+  useEffect(() => {
+    if (userId) {
+      // Join the user’s room on socket
+      joinUserRoom(userId);
+
+      // Listen for ticket updates
+      socket.on("ticketStatusUpdated", (data) => {
+        toast.info(`Ticket ${data.ticketId} updated: ${data.status}`, {
+          position: "bottom-right",
+          autoClose: 4000,
+        });
+      });
+
+      return () => {
+        socket.off("ticketStatusUpdated");
+      };
+    }
+  }, [userId]);
   // Menu links based on role
   let menuLinks = [];
 

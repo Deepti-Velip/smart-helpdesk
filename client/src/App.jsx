@@ -16,13 +16,15 @@ import Ticket from "./pages/Ticket";
 import Audit from "./pages/Audit";
 import TicketDetails from "./pages/ticketDetails";
 import ArticleList from "./pages/Admin/ArticlesList";
-import Suggestion from "./pages/User/Suggestions";
+import Suggestion from "./pages/User/suggestions";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   return (
     <BrowserRouter>
       {" "}
-      <Header />{" "}
+      <Header /> <ToastContainer />
       <Routes>
         {" "}
         <Route path="/" element={<Navigate to="/home" />} />{" "}

@@ -165,9 +165,9 @@ export default function ArticleList() {
               <td className="border px-4 py-2">
                 <div className="flex items-center justify-between">
                   <span>
-                    {article.body.length > 50
-                      ? article.body.substring(0, 50) + "..."
-                      : article.body}
+                    {article?.body && article.body.length > 100
+                      ? article.body.substring(0, 100) + "..."
+                      : article?.body || "No content available"}
                   </span>
                   <button
                     className="ml-2 text-blue-600 underline text-xs"

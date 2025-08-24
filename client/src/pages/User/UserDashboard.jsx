@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import api from "../../axios/index";
-import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { onTicketUpdate, offTicketUpdate } from "../../utils/socket";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function UserDashboard() {
   const [tickets, setTickets] = useState([]);
@@ -14,7 +16,7 @@ export default function UserDashboard() {
       const res = await api.get("/tickets/");
       setTickets(res.data || []);
     } catch (err) {
-      console.log(err);
+      console.error(err);
       setError("Failed to load tickets");
     } finally {
       setLoading(false);
@@ -22,7 +24,32 @@ export default function UserDashboard() {
   };
 
   useEffect(() => {
+    // ✅ Listen for updates
+    const handleUpdate = ({ ticketId, status }) => {
+      setTickets((prev) =>
+        prev.map((t) => (t._id === ticketId ? { ...t, status } : t))
+      );
+
+      // 🔔 Show toast notification
+      toast.info(`Ticket ${ticketId} is now ${status}   userside`, {
+        position: "top-right",
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    };
+
+    onTicketUpdate(handleUpdate);
+
+    // Fetch tickets initially
     fetchTickets();
+
+    // Cleanup on unmount
+    return () => {
+      offTicketUpdate(handleUpdate);
+    };
   }, []);
 
   const navigate = useNavigate();
@@ -32,8 +59,12 @@ export default function UserDashboard() {
 
   return (
     <div className="p-6">
+      {/* Toast container */}
+      <ToastContainer />
+
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">My Issues</h1>
+
         <Link to="/user/create-ticket">
           <button className="px-4 py-2 bg-blue-600 hover:bg-blue-700 transition text-white rounded-lg shadow">
             + Log Issue

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import api from "../axios/index"; // ✅ use api consistently
+import api from "../axios/index";
+import { joinTicketRoom } from "../utils/socket";
 
 const TicketDetails = () => {
   const { id } = useParams();
@@ -49,6 +50,10 @@ const TicketDetails = () => {
 
     fetchAgents();
     fetchTicket();
+  }, [id]);
+
+  useEffect(() => {
+    joinTicketRoom(id);
   }, [id]);
 
   // Reply to ticket
