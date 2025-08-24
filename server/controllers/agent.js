@@ -1,6 +1,7 @@
 import axios from "axios";
 import AgentSuggestion from "../models/AgentSuggestion.js";
 import AuditLog from "../models/AuditLog.js";
+import { notifyStatusChange, notifyUserTicketUpdate } from "../index.js";
 
 const AGENT_URL = process.env.AGENT_URL || "http://localhost:8000/triage";
 
@@ -36,6 +37,10 @@ export async function triggerTriage(ticket) {
     ticket.agentSuggestionId = suggestion._id;
     ticket.status = triage.autoClosed ? "resolved" : "waiting_human";
     await ticket.save();
+
+    // Notify via Socket.IO
+    notifyStatusChange(req.params.id, ticket.status);
+    notifyUserTicketUpdate(ticket.createdBy._id, req.params.id, ticket.status);
 
     // --- 4. Log steps in AuditLog ---
     await AuditLog.create({

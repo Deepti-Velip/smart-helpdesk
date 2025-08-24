@@ -1,6 +1,8 @@
 import AuditLog from "../models/AuditLog.js";
 import Ticket from "../models/Ticket.js";
 import { triggerTriage } from "../controllers/agent.js";
+import { notifyStatusChange, notifyUserTicketUpdate } from "../index.js";
+// import { notifyStatusChange } from "../index.js";
 
 // Create new ticket (user)
 export const createTicket = async (req, res) => {
@@ -175,8 +177,14 @@ export const updateTicketStatus = async (req, res) => {
       return res.status(404).json({ message: "Ticket not found" });
     }
 
+    // 1. Notify clients in the ticket room (if any are watching live)
+    notifyStatusChange(req.params.id, status);
+    notifyUserTicketUpdate(ticket.createdBy._id, req.params.id, status);
+
     res.json({ message: "Status updated successfully", ticket });
   } catch (err) {
-    res.status(500).json({ message: "Error updating status", error: err });
+    res
+      .status(500)
+      .json({ message: "Error updating status", error: err.message });
   }
 };

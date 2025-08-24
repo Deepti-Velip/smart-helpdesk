@@ -1,42 +1,71 @@
-import express from "express";
-import cors from "cors";
-import dotenv from "dotenv";
-import authRoutes from "./routes/auth.js";
-import articleRoutes from "./routes/kb.js";
-import ticketRoutes from "./routes/ticket.js";
-import agentRoutes from "./routes/agent.js";
-import auditRoutes from "./routes/auditLog.js";
-import connectDB from "./config/db.js";
-import configRoutes from "./routes/config.js";
-
-dotenv.config();
-
-connectDB();
-const app = express();
-app.use(
-  cors({
-    origin: "http://localhost:5173",
-    credentials: true,
-  })
-);
-
-app.use(express.json());
-
-app.use("/api/auth", authRoutes);
-app.use("/api/kb", articleRoutes);
-app.use("/api/tickets", ticketRoutes);
-app.use("/api/agent", agentRoutes);
-app.use("/api", auditRoutes);
-app.use("/api", configRoutes);
-
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ error: err.message });
-});
+import { createServer } from "http";
+import { Server } from "socket.io";
+import app from "./app.js";
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+// Create HTTP server
+const httpServer = createServer(app);
+
+// Attach Socket.IO
+const io = new Server(httpServer, {
+  cors: {
+    origin: "http://localhost:5173",
+    credentials: true,
+  },
 });
 
-export default app;
+// Socket.IO connection
+io.on("connection", (socket) => {
+  console.log("Client connected:", socket.id);
+
+  // Join per-user room (for global notifications)
+  socket.on("joinUserRoom", (userId) => {
+    socket.join(`user-${userId}`);
+    console.log(`${socket.id} joined user-${userId}`);
+  });
+
+  // Join per-ticket room (useful when user/agent views ticket live)
+  socket.on("joinTicketRoom", (ticketId) => {
+    socket.join(`ticket-${ticketId}`);
+    console.log(`${socket.id} joined ticket-${ticketId}`);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("Client disconnected:", socket.id);
+  });
+});
+
+// --- Helpers ---
+
+// Notify all clients in a specific ticket room
+export const notifyStatusChange = async (ticketId, newStatus) => {
+  const room = `ticket-${ticketId}`;
+  const sockets = await io.in(room).fetchSockets();
+
+  if (sockets.length > 0) {
+    io.to(room).emit("ticketStatusUpdated", { ticketId, status: newStatus });
+    console.log(`✅ Update sent to ${sockets.length} client(s) in ${room}`);
+  } else {
+    console.log(`⚠️ No clients connected to ${room}, update not delivered`);
+  }
+};
+
+// Notify the ticket creator (user room)
+export const notifyUserTicketUpdate = async (userId, ticketId, newStatus) => {
+  const room = `user-${userId}`;
+  const sockets = await io.in(room).fetchSockets();
+
+  if (sockets.length > 0) {
+    io.to(room).emit("userTicketUpdated", { ticketId, status: newStatus });
+    console.log(
+      `✅ Notified user-${userId} about ticket ${ticketId} → ${newStatus}`
+    );
+  } else {
+    console.log(`⚠️ No active clients for user-${userId}`);
+  }
+};
+
+// Start server
+httpServer.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
+});
